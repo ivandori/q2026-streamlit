@@ -1,0 +1,25 @@
+SEZIONE DEI CAVI:
+    - aggiungere sezN=seF e sezN libero
+    - aggiungere sezPE=seF e sezPE libero
+    - separare numero di paralleli tra F, N, PE
+    - aggiornare algoritmi di calcolo
+
+DISPOSITIVO DI PROTEZIONE
+    - per i magnetotermici distinguere il potere di interruzione tra Icu (CEI EN 60947-2) e Icn (CEI EN 60989-1)
+    - se l'interruttore lo prevede aggiungere la I regolabile
+
+POSA:
+    - aggiungere le immagini delle pose
+
+GESTIONE FILE:
+    - salva i dati della linea
+    - apri una linea salvata
+    - collegamento a una linea -> importa  dati di input e mostra la sintesi della linea a magnetotermici
+
+ALTRO
+    - aggiungi i coefficienti di utilizzo e contemporaneità
+    - calcolo delle derivazioni (es. illuminazione stradale)
+    - calcola i dati del carico sommando le linee collegate a valle
+    - aggiungi il quadro elettrico di appartenenza
+    - schema linee quadro
+    - lista riassuntiva dispositivi e conduttori
