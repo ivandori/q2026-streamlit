@@ -4,4 +4,4 @@
 
 Sviluppato con linguaggio Python in ambiente [Streamlit](https://streamlit.io/)
 
-Dwmo disponibile in [https://q2026demo.streamlit.app/]https://q2026demo.streamlit.app/
+Dwmo disponibile in https://q2026demo.streamlit.app/
