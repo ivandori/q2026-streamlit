@@ -434,58 +434,60 @@ with st.container():
             )
 
     # --- Magnetotermico (curva, I²t, potere interr.) ---
-    with col3:
-        curva_opts = cerca_curva(
-            st.session_state.n_poli_selection,
-            st.session_state.dispositivo_selection,
-            st.session_state.inom_selection
-        )
-        if curva_opts:
-            with st.container(border=True):
-                st.markdown(":blue[Magnetotermico]")
-                sync_selectbox("Curva", "curva_selection", curva_opts)
-                if st.session_state.curva_selection:
-                    i2t_val = calcolo_i2t(
-                        st.session_state.curva_selection,
-                        st.session_state.inom_selection
+    if st.session_state.dispositivo_selection in ["MTD", "MT_"]:
+        with col3:
+            curva_opts = cerca_curva(
+                st.session_state.n_poli_selection,
+                st.session_state.dispositivo_selection,
+                st.session_state.inom_selection
+            )
+            if curva_opts:
+                with st.container(border=True):
+                    st.markdown(":blue[Magnetotermico]")
+                    sync_selectbox("Curva", "curva_selection", curva_opts)
+                    if st.session_state.curva_selection:
+                        i2t_val = calcolo_i2t(
+                            st.session_state.curva_selection,
+                            st.session_state.inom_selection
+                        )
+                        if i2t_val >= 1e8:
+                            st.metric("$I^2t$ (A²s)", f"{i2t_val:.3e}",
+                                    help="Valore stimato basato sulla curva di intervento selezionata (consultare i dati del costruttore per valori precisi).")
+                        else:
+                            st.metric("$I^2t$ (A²s)", f"{i2t_val:.0f}",
+                        help="Valore stimato basato sulla curva di intervento selezionata (consultare i dati del costruttore per valori precisi).")
+                    sync_selectbox(
+                        "Potere di int.", "potint_selection",
+                        cerca_potint(
+                            st.session_state.n_poli_selection,
+                            st.session_state.dispositivo_selection,
+                            st.session_state.inom_selection,
+                            st.session_state.curva_selection,
+                            st.session_state.n_fasi_carico
+                        )
                     )
-                    if i2t_val >= 1e8:
-                        st.metric("$I^2t$ (A²s)", f"{i2t_val:.3e}",
-                                help="Valore stimato basato sulla curva di intervento selezionata (consultare i dati del costruttore per valori precisi).")
-                    else:
-                        st.metric("$I^2t$ (A²s)", f"{i2t_val:.0f}",
-                    help="Valore stimato basato sulla curva di intervento selezionata (consultare i dati del costruttore per valori precisi).")
-                sync_selectbox(
-                    "Potere di int.", "potint_selection",
-                    cerca_potint(
-                        st.session_state.n_poli_selection,
-                        st.session_state.dispositivo_selection,
-                        st.session_state.inom_selection,
-                        st.session_state.curva_selection,
-                        st.session_state.n_fasi_carico
-                    )
-                )
 
     # --- Differenziale (classe, Idiff) ---
-    with col4:
-        classe_opts = cerca_classe(
-            st.session_state.n_poli_selection,
-            st.session_state.dispositivo_selection,
-            st.session_state.inom_selection
-        )
-        if classe_opts:
-            with st.container(border=True):
-                st.markdown(":blue[Differenziale]")
-                sync_selectbox("Classe", "classe_selection", classe_opts)
-                sync_selectbox(
-                    "Idiff", "idiff_selection",
-                    cerca_dmin(
-                        st.session_state.n_poli_selection,
-                        st.session_state.dispositivo_selection,
-                        st.session_state.inom_selection,
-                        st.session_state.classe_selection
+    if st.session_state.dispositivo_selection in ["MTD", "DIF"]:
+        with col4:
+            classe_opts = cerca_classe(
+                st.session_state.n_poli_selection,
+                st.session_state.dispositivo_selection,
+                st.session_state.inom_selection
+            )
+            if classe_opts:
+                with st.container(border=True):
+                    st.markdown(":blue[Differenziale]")
+                    sync_selectbox("Classe", "classe_selection", classe_opts)
+                    sync_selectbox(
+                        "Idiff", "idiff_selection",
+                        cerca_dmin(
+                            st.session_state.n_poli_selection,
+                            st.session_state.dispositivo_selection,
+                            st.session_state.inom_selection,
+                            st.session_state.classe_selection
+                        )
                     )
-                )
 
 # =============================================================================
 # 8. UI – CONDUTTORE E POSA
@@ -941,7 +943,7 @@ with st.container(border=True):
             st.metric(":blue[$Cosφ$ Fase-Neutro]", f"{float(CosFiccFNmin):.3f}")
         if st.session_state.pe_carico and CosFiccFGmin is not None:
             st.metric(":blue[$Cosφ$ Fase-Prot.esterna]", f"{float(CosFiccFGmin):.3f}")
-    if classe_opts and st.session_state.pe_carico:
+    if "classe_opts" in st.session_state and st.session_state.pe_carico:
         st.markdown(
                 "<h3 style='text-align: left; color: green;'>Protezione dai contatti indiretti (TN)</h3>",
                 unsafe_allow_html=True
@@ -971,7 +973,7 @@ with st.container(border=True):
     else:
         st.error(f"😟 $I_n$ dispositivo (${st.session_state.inom_selection:.1f}A$) > $I_z$ (${iz_corretta:.1f}A$)", icon="❌")
 
-    if curva_opts:
+    if st.session_state.dispositivo_selection in ["MTD", "MT_"]:
         # Potere di interruzione
         if st.session_state.get('potint_selection') is not None:
             icc_max = max(Icc3Fmax, IccFNmax, IccFGmax)
@@ -996,18 +998,19 @@ with st.container(border=True):
         st.error(f"😟 $cdt_{{\\mathrm{{out}}}}$ (${cdt_uscita:.2f}\\%$) > $cdt_{{\\mathrm{{max}}}}$ (${st.session_state.cdt_max:.2f}\\%$)", icon="❌")
         
     # Verifica protezione differenziale (se presente)
-    if classe_opts and st.session_state.pe_carico and st.session_state.get("idiff_selection") is not None and Idiff_min is not None:
-        if isinstance(st.session_state.idiff_selection, (int, float)):
-            valore_idiff = float(st.session_state.idiff_selection) if st.session_state.idiff_selection is not None else 0
-            try:
-                valore_idiff_float = float(valore_idiff)
-                idiff_min_float = float(Idiff_min)
-                if valore_idiff_float <= idiff_min_float:
-                    st.success(f"🙂 $I_{{diff}}$ differenziale (${st.session_state.idiff_selection}A$) $\\leq I_{{diff}}$ minimo (${Idiff_min:.3f}A$)", icon="✅")
-                else:
-                    st.error(f"😟 $I_{{diff}}$ differenziale (${st.session_state.idiff_selection}A$) > $I_{{diff}}$ minimo (${Idiff_min:.3f}A$)", icon="❌")
-            except (TypeError, ValueError):
-                st.error("Errore nel confronto Idiff: valori non numerici")
+    if st.session_state.dispositivo_selection in ["MTD", "DIF"]:  
+        if st.session_state.pe_carico and st.session_state.get("idiff_selection") is not None and Idiff_min is not None:
+            if isinstance(st.session_state.idiff_selection, (int, float)):
+                valore_idiff = float(st.session_state.idiff_selection) if st.session_state.idiff_selection is not None else 0
+                try:
+                    valore_idiff_float = float(valore_idiff)
+                    idiff_min_float = float(Idiff_min)
+                    if valore_idiff_float <= idiff_min_float:
+                        st.success(f"🙂 $I_{{diff}}$ differenziale (${st.session_state.idiff_selection}A$) $\\leq I_{{diff}}$ minimo (${Idiff_min:.3f}A$)", icon="✅")
+                    else:
+                        st.error(f"😟 $I_{{diff}}$ differenziale (${st.session_state.idiff_selection}A$) > $I_{{diff}}$ minimo (${Idiff_min:.3f}A$)", icon="❌")
+                except (TypeError, ValueError):
+                    st.error("Errore nel confronto Idiff: valori non numerici")
 
 # =============================================================================
 # 12. UI – FORMULE E DOCUMENTAZIONE
