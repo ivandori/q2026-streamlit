@@ -2,7 +2,7 @@
 =============================================================================
 Q2026 - DEMO DIMENSIONAMENTO DI UNA LINEA ELETTRICA
 FUNZIONI MAIN PER STREAMLIT
-Ultimo aggiornamento: 24/02/2026
+Ultimo aggiornamento: 26/02/2026
 AUTORE: Ivano Dorigatti
 LICENZA: MIT License
 =============================================================================
@@ -882,7 +882,7 @@ temp_cavo, supera_temp = calcolo_temperatura_cavo_preciso(
 # =============================================================================
 # risultati calcolo sezioni e k2s2
 with st.container(border=True):
-    st.markdown(":blue[CALCOLO]")
+    st.markdown(":blue[CALCOLO]", help="I valori di corrente nominale e I²t sono stimati sulla base dei dati selezionati e delle curve di intervento fornite dal costruttore. Consultare sempre i dati tecnici specifici del dispositivo per informazioni precise.")
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric(":blue[$I_z$ nominale (A)]", iz_nom)
@@ -922,9 +922,10 @@ with st.container(border=True):
             st.error(f"⚠️ Temperatura esterna cavo ({temp_cavo:.0f}°C) > temperatura massima ammissibile ({temp_max}°C)")
         else:
             st.metric(":blue[Temperatura esterna cavo (°C)]", f"{temp_cavo:.0f} < {temp_max}°C", help="temperatura stimata a scopo informativo sulla base della corrente di carico, sezione e condizioni di posa (non è una stima precisa, consultare i dati del costruttore per informazioni dettagliate).")
+
     help_msg = "Consultare le curve di intervento $$I^2t-Icc$$ del dispositivo fornite dal costruttore per verificare la protezione contro i cortocircuiti, considerando le condizioni di guasto minime indicate.\n⚠️ in presenza di parallelli il minimo non sta a fine linea!"
     st.markdown(":green[CONDIZIONI DI GUASTO (minimo ⚠️)]", help=help_msg)
-    
+
     col_cc1, col_cc2 = st.columns(2)
     with col_cc1:
         if st.session_state.n_fasi_carico > 1 and Icc3Fmin is not None:
@@ -1014,7 +1015,7 @@ with st.container(border=True):
 # =============================================================================
 centered_header("FORMULE E DOCUMENTAZIONE")
 with st.container(border=True):
-    st.markdown(":blue[Algoritmi di calcolo utilizzati]")
+    st.markdown(":blue[Formule utilizzate]", help="Le formule riportate sono a scopo didattico e rappresentano le principali relazioni utilizzate nei calcoli. Consultare sempre le normative e i dati tecnici specifici per applicazioni reali.")
     st.latex(r"I_{b} \leq I_{n} \leq I_{z}")
     st.latex(r"P_i > I_{cc}")
     st.latex(r"I_{\mathrm{cc}}^2 \cdot t_c \le k^2 \cdot S^2")
