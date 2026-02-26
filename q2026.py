@@ -922,12 +922,9 @@ with st.container(border=True):
             st.error(f"⚠️ Temperatura esterna cavo ({temp_cavo:.0f}°C) > temperatura massima ammissibile ({temp_max}°C)")
         else:
             st.metric(":blue[Temperatura esterna cavo (°C)]", f"{temp_cavo:.0f} < {temp_max}°C", help="temperatura stimata a scopo informativo sulla base della corrente di carico, sezione e condizioni di posa (non è una stima precisa, consultare i dati del costruttore per informazioni dettagliate).")
-
-    st.markdown(
-        "<h3 style='text-align: center; color: green;'>Condizioni di guasto (min ⚠️)</h3>",
-        unsafe_allow_html=True, help="Consultare le curve di intervento $$I^2t-Icc$$ del dispositivo fornite dal costruttore per verificare la protezione contro i cortocircuiti, considerando le condizioni di guasto minime indicate.\n⚠️ in presenza di parallelli il minimo non sta a fine linea!"
-
-    )
+    help_msg = "Consultare le curve di intervento $$I^2t-Icc$$ del dispositivo fornite dal costruttore per verificare la protezione contro i cortocircuiti, considerando le condizioni di guasto minime indicate.\n⚠️ in presenza di parallelli il minimo non sta a fine linea!"
+    st.markdown(":green[CONDIZIONI DI GUASTO (minimo ⚠️)]", help=help_msg)
+    
     col_cc1, col_cc2 = st.columns(2)
     with col_cc1:
         if st.session_state.n_fasi_carico > 1 and Icc3Fmin is not None:
